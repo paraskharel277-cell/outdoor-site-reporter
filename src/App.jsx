@@ -1,16 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
+import ReportForm from './components/ReportForm';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 function App() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  const [reports, setReports] = useState(() => {
+    const saved = localStorage.getItem('site_reports');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('site_reports', JSON.stringify(reports));
+  }, [reports]);
+
+  const addReport = (newReport) => {
+    setReports([newReport, ...reports]);
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
       <Header
         isOffline={isOffline}
         setIsOffline={setIsOffline}
-        reportCount={0}
+        reportCount={reports.length}
       />
 
       {isOffline && (
@@ -25,7 +39,7 @@ function App() {
             <CardTitle>New Site Report</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500">Form will be added here.</p>
+            <ReportForm onAddReport={addReport} />
           </CardContent>
         </Card>
 
@@ -34,7 +48,9 @@ function App() {
             <CardTitle>Saved Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500">Report list will be shown here.</p>
+            <p className="text-sm text-slate-500">
+              {reports.length} report(s) saved in local storage.
+            </p>
           </CardContent>
         </Card>
       </main>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import ReportForm from './components/ReportForm';
+import ReportList from './components/ReportList';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 function App() {
@@ -17,6 +18,18 @@ function App() {
 
   const addReport = (newReport) => {
     setReports([newReport, ...reports]);
+  };
+
+  const updateReport = (id, updatedFields) => {
+    setReports(
+      reports.map((item) =>
+        item.id === id ? { ...item, ...updatedFields } : item
+      )
+    );
+  };
+
+  const deleteReport = (id) => {
+    setReports(reports.filter((item) => item.id !== id));
   };
 
   return (
@@ -48,9 +61,11 @@ function App() {
             <CardTitle>Saved Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500">
-              {reports.length} report(s) saved in local storage.
-            </p>
+            <ReportList
+              reports={reports}
+              onUpdateReport={updateReport}
+              onDeleteReport={deleteReport}
+            />
           </CardContent>
         </Card>
       </main>
